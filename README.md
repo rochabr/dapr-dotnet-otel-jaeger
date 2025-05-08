@@ -2,13 +2,13 @@
 
 This sample demonstrates a .NET Web API using the Dapr .NET SDK to interact with a Redis-backed Dapr state store. It also shows how to trace these operations using Jaeger via the OpenTelemetry (OTLP gRPC) exporter.
 
-## 🚀 Prerequisites
+## Prerequisites
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download)
 - [Dapr CLI](https://docs.dapr.io/getting-started/install-dapr/)
 - [Docker](https://www.docker.com/)
 
-## 📦 Start Jaeger Locally
+## Start Jaeger Locally
 
 Run Jaeger with OTLP gRPC support:
 
@@ -23,7 +23,7 @@ docker run -d --name jaeger \
 - Jaeger UI: http://localhost:16686
 - OTLP gRPC: `localhost:4317`
 
-## ⚙️ Configure Dapr Tracing
+## Configure Dapr Tracing
 
 Create a `dapr-config.yaml`:
 
@@ -42,7 +42,7 @@ spec:
       protocol: grpc
 ```
 
-## 🧩 Create Redis State Store Component
+## Create Redis State Store Component
 
 Create `.dapr/components/statestore.yaml`:
 
@@ -61,9 +61,9 @@ spec:
       value: ""
 ```
 
-> ⚠️ Make sure Redis is running locally on port 6379.
+> Make sure Redis is running locally on port 6379.
 
-## 🟣 Run the App with Dapr
+## Run the App with Dapr
 
 ```bash
 dapr run \
@@ -75,7 +75,7 @@ dapr run \
   -- dotnet run --project MyService
 ```
 
-## 📬 Test Service Invocationvia Dapr API
+## Test Service Invocationvia Dapr API
 
 In a new tab:
 
@@ -83,7 +83,7 @@ In a new tab:
 curl -X POST http://localhost:3500/v1.0/state/statestore -H "Content-Type: application/json" -d '[{"key":"foo","value":"bar"}]'
 ```
 
-## 📬 Test State Store via Dapr SDK
+## Test State Store via Dapr SDK
 
 Store a value:
 
@@ -99,7 +99,21 @@ Get the value:
 curl http://localhost:5000/state/mykey
 ```
 
-## 🔍 View Traces in Jaeger
+## Test State Store via Dapr APIs
+
+Store a value:
+
+```bash
+curl -X POST http://localhost:3500/v1.0/state/statestore -H "Content-Type: application/json" -d '[{"key":"foo","value":"bar"}]'
+```
+
+Get the value:
+
+```bash
+curl http://localhost:3500/v1.0/state/statestore/foo
+```
+
+## View Traces in Jaeger
 
 Go to: [http://localhost:16686](http://localhost:16686)
 
@@ -107,3 +121,5 @@ Go to: [http://localhost:16686](http://localhost:16686)
 - You should see traced spans like:
   - `myservice: CallLocal/myservice/hello`
   - `myservice: /v1.0/state/statestore`
+
+> Uncomment the code in Program.cs to see the traces for Dapr SDK calls as the statestore calls are failing as-is.
